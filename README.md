@@ -1,51 +1,216 @@
-# Welcome to your Expo app 👋
+# 🍽️ DineTime - Restaurant Reservation App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern, cross-platform mobile application for restaurant reservations and dining experiences. Built with React Native, Expo, and Firebase.
 
-## Get started
+## 📱 Features
 
-1. Install dependencies
+- **🔐 User Authentication**: Sign up, sign in, and guest access
+- **🏪 Restaurant Discovery**: Browse and explore restaurants with detailed information
+- **📅 Table Reservations**: Book tables with date and time selection
+- **👥 Guest Management**: Specify party size for reservations
+- **💳 Special Discounts**: Access exclusive restaurant offers
+- **📍 Location Services**: Find restaurants in your area
+- **🌙 Dark Theme**: Modern dark UI design
+- **📱 Cross-Platform**: Works on iOS, Android, and Web
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **React Native** - Cross-platform mobile development
+- **Expo** - Development platform and build tools
+- **NativeWind** - Tailwind CSS for React Native
+- **Expo Router** - File-based routing system
+
+### Backend & Services
+
+- **Firebase** - Authentication and Firestore database
+- **AsyncStorage** - Local data persistence
+
+### UI & UX
+
+- **Tailwind CSS** - Utility-first styling
+- **Expo Vector Icons** - Icon library
+- **React Native Safe Area Context** - Safe area handling
+- **Expo Blur** - Blur effects
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm or yarn
+- Expo CLI
+- iOS Simulator (for iOS development) or Android Studio (for Android development)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd dine-time
+   ```
+
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Configure Firebase**
 
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication and Firestore Database
+   - Update `app/config/firebase.config.js` with your Firebase configuration
+
+4. **Start the development server**
    ```bash
-   npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+### Running the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **iOS**: `npm run ios`
+- **Android**: `npm run android`
+- **Web**: `npm run web`
+- **Expo Go**: Scan QR code from `npm start`
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📁 Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+dine-time/
+├── app/                    # Main application code
+│   ├── (auth)/            # Authentication screens
+│   │   ├── signin.jsx
+│   │   └── signup.jsx
+│   ├── (tabs)/            # Tab navigation screens
+│   │   ├── _layout.jsx
+│   │   ├── home.jsx
+│   │   ├── history.jsx
+│   │   ├── profile.jsx
+│   │   └── restaurant/
+│   │       └── [restaurant].jsx
+│   ├── _layout.jsx        # Root layout
+│   └── index.jsx          # Landing page
+├── assets/                # Static assets
+│   ├── images/           # Image files
+│   └── fonts/            # Custom fonts
+├── components/            # Reusable components
+│   └── restaurant/       # Restaurant-specific components
+├── config/               # Configuration files
+├── utils/                # Utility functions and schemas
+├── global.css           # Global styles
+├── tailwind.config.js   # Tailwind CSS configuration
+├── babel.config.js      # Babel configuration
+├── metro.config.js      # Metro bundler configuration
+└── package.json         # Dependencies and scripts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🔧 Configuration
 
-## Learn more
+### Firebase Setup
 
-To learn more about developing your project with Expo, look at the following resources:
+1. Create a new Firebase project
+2. Enable Authentication with Email/Password provider
+3. Enable Firestore Database
+4. Add your Firebase config to `app/config/firebase.config.js`
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### NativeWind Setup
 
-## Join the community
+The app uses NativeWind for styling. Configuration is handled in:
 
-Join our community of developers creating universal apps.
+- `tailwind.config.js` - Tailwind CSS configuration
+- `babel.config.js` - Babel preset for NativeWind
+- `metro.config.js` - Metro bundler configuration
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📱 Screens & Features
+
+### Authentication Flow
+
+- **Landing Page** (`index.jsx`): Welcome screen with sign-in options
+- **Sign Up** (`signup.jsx`): User registration
+- **Sign In** (`signin.jsx`): User login
+
+### Main App
+
+- **Home** (`home.jsx`): Restaurant listings and featured content
+- **Restaurant Details** (`[restaurant].jsx`): Individual restaurant view with booking
+- **History** (`history.jsx`): Reservation history
+- **Profile** (`profile.jsx`): User profile management
+
+### Components
+
+- **FindSlots**: Table availability checker
+- **DatePickerComponent**: Date selection for reservations
+- **GuestPickerComponent**: Party size selector
+
+## 🎨 Styling
+
+The app uses NativeWind (Tailwind CSS for React Native) with a dark theme:
+
+- **Primary Colors**: Dark gray (`#2b2b2b`), Medium gray (`#5f5f5f`)
+- **Accent Color**: Orange (`#fb9b33`)
+- **Text Color**: White (`#ffffff`)
+
+## 🧪 Testing
+
+```bash
+npm test
+```
+
+## 📋 Scripts
+
+- `npm start` - Start Expo development server
+- `npm run android` - Run on Android emulator
+- `npm run ios` - Run on iOS simulator
+- `npm run web` - Run on web browser
+- `npm test` - Run Jest tests
+- `npm run lint` - Run ESLint
+
+## 🚀 Deployment
+
+### Building for Production
+
+1. **Configure app.json** with your app details
+2. **Build for platforms**:
+
+   ```bash
+   npx expo build:android
+   npx expo build:ios
+   ```
+
+3. **Deploy to stores**:
+   - Google Play Store for Android
+   - Apple App Store for iOS
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙋‍♂️ Support
+
+For support, email [your-email@example.com] or join our Discord community.
+
+## 📊 Roadmap
+
+- [ ] Push notifications for reservations
+- [ ] Restaurant reviews and ratings
+- [ ] Payment integration
+- [ ] Restaurant owner dashboard
+- [ ] Advanced filtering and search
+- [ ] Offline mode support
+
+---
+
+Made with ❤️ using React Native & Expo
+
 # dine-time
