@@ -1,23 +1,23 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurView } from "expo-blur";
+import { useRouter } from "expo-router";
+import { collection, getDocs, query } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  ActivityIndicator,
+  FlatList,
   Image,
+  ImageBackground,
   Platform,
   ScrollView,
-  ImageBackground,
-  FlatList,
-  ActivityIndicator,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
 import logo from "../../assets/images/dinetimelogo.png";
 import banner from "../../assets/images/homeBanner.png";
-import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { db } from "../config/firebase.config";
 
 export default function Home() {
   const router = useRouter();

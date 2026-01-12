@@ -1,22 +1,22 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useLocalSearchParams } from "expo-router";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Platform,
-  ScrollView,
-  FlatList,
   Dimensions,
+  FlatList,
   Image,
   Linking,
+  Platform,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import DatePickerComponent from "../../components/restaurant/DatePickerComponent";
-import GuestPickerComponent from "../../components/restaurant/GuestPickerComponent";
 import FindSlots from "../../components/restaurant/FindSlots";
+import GuestPickerComponent from "../../components/restaurant/GuestPickerComponent";
+import { db } from "../config/firebase.config";
 
 export default function Restaurant() {
   const { restaurant } = useLocalSearchParams();
