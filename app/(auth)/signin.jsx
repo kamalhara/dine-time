@@ -9,53 +9,53 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/dinetimelogo.png";
 const entryImg = require("../../assets/images/Frame.png");
 import { Formik } from "formik";
 import validationSchema from "../../utils/authSchema";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const Signup = () => {
   const router = useRouter();
   const auth = getAuth();
   const db = getFirestore();
-
   const handleGuest = async () => {
     await AsyncStorage.setItem("isGuest", "true");
     router.push("/home");
   };
-
-  const handleSignup = async (values) => {
+  const handleSignin = async (values) => {
     try {
-      const userCredentials = await createUserWithEmailAndPassword(
+      const userCredentials = await signInWithEmailAndPassword(
         auth,
         values.email,
         values.password
       );
       const user = userCredentials.user;
 
-      await setDoc(doc(db, "users", user.uid), {
-        email: values.email,
-        createdAt: new Date(),
-      });
-
-      await AsyncStorage.setItem("userEmail", values.email);
-      await AsyncStorage.setItem("isGuest", "false");
-
-      router.push("/home");
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        console.log("User data:", userDoc.data());
+        await AsyncStorage.setItem("userEmail", values.email);
+        await AsyncStorage.setItem("isGuest", "false");
+        router.push("/home");
+      } else {
+        console.log("No such Doc");
+      }
     } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
+      console.log(error);
+
+      if (error.code === "auth/invalid-credential") {
         Alert.alert(
-          "Signup Failed!",
-          "This email address is already in use. Please use a different email.",
+          "Signin Failed!",
+          "Incorrect credentials. Please try again.",
           [{ text: "OK" }]
         );
       } else {
         Alert.alert(
-          "Signup Error",
+          "Sign in Error",
           "An unexpected error occurred. Please try again later.",
           [{ text: "OK" }]
         );
@@ -75,7 +75,7 @@ const Signup = () => {
             <Formik
               initialValues={{ email: "", password: "" }}
               validationSchema={validationSchema}
-              onSubmit={handleSignup}
+              onSubmit={handleSignin}
             >
               {({
                 handleChange,
@@ -120,7 +120,7 @@ const Signup = () => {
                     className="p-2 my-2 bg-[#f49b33]  text-black rounded-lg mt-10"
                   >
                     <Text className="text-lg font-semibold text-center">
-                      Sign Up
+                      Sign In
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -129,13 +129,11 @@ const Signup = () => {
             <View className="flex justify-center items-center">
               <TouchableOpacity
                 className="flex flex-row justify-center mt-5 p-2 items-center"
-                onPress={() => router.push("/signin")}
+                onPress={() => router.push("/signup")}
               >
-                <Text className="text-white font-semibold">
-                  Already a User?{" "}
-                </Text>
+                <Text className="text-white font-semibold">New User? </Text>
                 <Text className="text-base font-semibold underline text-[#f49b33]">
-                  Sign in
+                  Sign up
                 </Text>
               </TouchableOpacity>
 

@@ -1,83 +1,106 @@
-import { BlurView } from "expo-blur";
-import React from "react";
 import {
-  ActivityIndicator,
-  FlatList,
+  View,
+  Text,
   Image,
-  ImageBackground,
   Platform,
   ScrollView,
-  Text,
+  ImageBackground,
+  FlatList,
+  ActivityIndicator,
   TouchableOpacity,
-  View,
 } from "react-native";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
 import logo from "../../assets/images/dinetimelogo.png";
-import homeBanner from "../../assets/images/homeBanner.png";
-import { restaurants } from "../store/restaurant";
+import banner from "../../assets/images/homeBanner.png";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../../config/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function home() {
+export default function Home() {
+  const router = useRouter();
+  const [restaurants, setRestaurants] = useState([]);
+  const temp = async () => {
+    const value = await AsyncStorage.getItem("isGuest");
+    const email = await AsyncStorage.getItem("userEmail");
+    console.log(value, email);
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity className="bg-[#5f5f5f] max-h-64  max-w-xs flex justify-center  mx-4 p-4 rounded-lg shadow-md ">
+    <TouchableOpacity
+      onPress={() => router.push(`/restaurant/${item.name}`)}
+      className="bg-[#5f5f5f] max-h-64 max-w-xs flex justify-center rounded-lg p-4 mx-4 shadow-md"
+    >
       <Image
-        className="self-center"
         resizeMode="cover"
         source={{ uri: item.image }}
-        style={{
-          height: 98,
-          width: 180,
-          marginTop: 8,
-          marginBottom: 4,
-          borderRadius: 8,
-        }}
+        className="h-28 mt-2 mb-1 rounded-lg"
       />
       <Text className="text-white text-lg font-bold mb-2">{item.name}</Text>
       <Text className="text-white text-base mb-2">{item.address}</Text>
-      <Text className="text-white text-base font-bold">
-        Open:{item.opening} - Close{item.closing}
+      <Text className="text-white text-base mb-2">
+        Open: {item.opening} - Close: {item.closing}
       </Text>
     </TouchableOpacity>
   );
+
+  const getRestaurants = async () => {
+    const q = query(collection(db, "restaurants"));
+    const res = await getDocs(q);
+
+    res.forEach((item) => {
+      setRestaurants((prev) => [...prev, item.data()]);
+    });
+  };
+  useEffect(() => {
+    getRestaurants();
+    temp();
+  }, []);
 
   return (
     <SafeAreaView
       style={[
         { backgroundColor: "#2b2b2b" },
-        Platform.OS === "android" && { paddingBottom: 50 },
-        Platform.OS === "ios" && { paddingBottom: 20 },
+        Platform.OS == "android" && { paddingBottom: 55 },
+        Platform.OS == "ios" && { paddingBottom: 20 },
       ]}
     >
-      <View className="flex items-center ">
-        <View className="bg-[#5f5f5f] w-11/12 rounded-lg shadow-lg justify-between py-2 px-4">
-          <View className="flex flex-row ">
+      <View className="flex items-center">
+        <View className="bg-[#5f5f5f] w-11/12 rounded-lg shadow-lg justify-between items-center flex flex-row p-2">
+          <View className="flex flex-row">
             <Text
-              className={`h-10 text-white text-base pt-[${Platform.OS === "ios" ? 8 : 6}] align-middle `}
+              className={`text-base h-10
+                ${Platform.OS == "ios" ? "pt-[8px]" : "pt-1"}
+               align-middle text-white`}
             >
-              Welcome To
+              {" "}
+              Welcome to{" "}
             </Text>
-            <Image source={logo} className="w-20 h-12" resizeMode="content" />
+            <Image resizeMode="cover" className={"w-20 h-12"} source={logo} />
           </View>
         </View>
       </View>
-
-      <ScrollView>
+      <ScrollView stickyHeaderIndices={[0]}>
         <ImageBackground
-          resizeMode="content"
-          className="my-4 w-full h-52 items-center justify-center"
-          source={homeBanner}
+          resizeMode="cover"
+          className="mb-4 w-full bg-[#2b2b2b] h-52 items-center justify-center"
+          source={banner}
         >
           <BlurView
-            intensity={`${Platform.OS === "android" ? 100 : 25}`}
+            intensity={Platform.OS === "android" ? 100 : 25}
             tint="dark"
+            className="w-full p-4 shadow-lg"
           >
-            <Text className="text-white text-center text-3xl font-bold">
+            <Text className="text-center text-3xl font-bold text-white">
               Dine with your loved ones
             </Text>
           </BlurView>
         </ImageBackground>
-        <View className="p-4 bg-[#2b2b2b] flex-row item-center mb-2">
-          <Text className="text-white text-3xl mr-2 font-semibold">
-            Special discount %
+        <View className="p-4 bg-[#2b2b2b] flex-row items-center">
+          <Text className="text-3xl text-white mr-2 font-semibold">
+            Special Discount %
           </Text>
         </View>
         {restaurants.length > 0 ? (
@@ -92,9 +115,9 @@ export default function home() {
         ) : (
           <ActivityIndicator animating color={"#fb9b33"} />
         )}
-        <View className="p-4 bg-[#2b2b2b] flex-row item-center mb-2 mt-5">
-          <Text className="text-[#fb9b33] text-3xl mr-2 font-semibold">
-            Our restaurants
+        <View className="p-4 bg-[#2b2b2b] flex-row items-center">
+          <Text className="text-3xl text-[#fb9b33] mr-2 font-semibold">
+            Our Restaurants
           </Text>
         </View>
         {restaurants.length > 0 ? (

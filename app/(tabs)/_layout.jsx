@@ -1,23 +1,21 @@
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text } from "react-native";
+import React from "react";
 import { Tabs } from "expo-router";
 import { Colors } from "../../assets/Colors";
-
+import Ionicons from "@expo/vector-icons/Ionicons";
 const TabLayout = () => {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.PRIMARY,
-        tabBarInactiveTintColor: Colors.dark.icon,
+        tabBarInActiveTintColor: Colors.dark.text,
         tabBarStyle: {
           backgroundColor: Colors.SECONDARY,
-          height: 75,
           paddingBottom: 14,
+          height: 75,
         },
-        tabBarLabelStyle: {
-          fontSize: 14,
-          fontWeight: "bold",
-        },
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "bold" },
       }}
     >
       <Tabs.Screen
