@@ -24,9 +24,9 @@ export default function Restaurant() {
   const windowWidth = Dimensions.get("window").width;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [restaurantData, setRestaurantData] = useState({});
-  const [carouselData, setCarouselData] = useState({});
+  const [carouselData, setCarouselData] = useState([]);
 
-  const [slotsData, setSlotsData] = useState({});
+  const [slotsData, setSlotsData] = useState([]);
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(2);
@@ -141,7 +141,7 @@ export default function Restaurant() {
     try {
       const restaurantQuery = query(
         collection(db, "restaurants"),
-        where("name", "==", restaurant)
+        where("name", "==", restaurant),
       );
       const restaurantSnapshot = await getDocs(restaurantQuery);
 
@@ -156,7 +156,7 @@ export default function Restaurant() {
 
         const carouselQuery = query(
           collection(db, "carousel"),
-          where("res_id", "==", doc.ref)
+          where("res_id", "==", doc.ref),
         );
         const carouselSnapshot = await getDocs(carouselQuery);
         const carouselImages = [];
@@ -171,11 +171,11 @@ export default function Restaurant() {
 
         const slotsQuery = query(
           collection(db, "slots"),
-          where("ref_id", "==", doc.ref)
+          where("ref_id", "==", doc.ref),
         );
         const slotsSnapshot = await getDocs(slotsQuery);
         const slots = [];
-        if (carouselSnapshot.empty) {
+        if (slotsSnapshot.empty) {
           console.log("No matching slots found");
           return;
         }

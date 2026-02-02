@@ -9,17 +9,20 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kamalhara.dinetime"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Frame.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kamalhara.dinetime"
     },
     "androidStatusBar": {
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "backgroundColor": "#ffffff"
     },
     "web": {
       "output": "static",
@@ -44,6 +47,14 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e0c0149d-a1e2-4531-bdc0-2fdae97799c2"
+      }
     }
   }
 }
