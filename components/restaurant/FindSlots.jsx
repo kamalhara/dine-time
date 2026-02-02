@@ -93,20 +93,24 @@ const FindSlots = ({
       </View>
       {slotsVisible && (
         <View className="flex-wrap flex-row mx-2 p-2 bg-[#474747] rounded-lg">
-          {slots.map((slot, index) => (
-            <TouchableOpacity
-              key={index}
-              className={` m-2 p-4 bg-[#f49b33] rounded-lg items-center justify-center ${
-                selectedSlot && selectedSlot !== slot ? "opacity-50" : ""
-              }`}
-              onPress={() => handleSlotPress(slot)}
-              disabled={
-                selectedSlot == slot || selectedSlot == null ? false : true
-              }
-            >
-              <Text className="text-white font-bold">{slot}</Text>
-            </TouchableOpacity>
-          ))}
+          {slots && slots.length > 0 ? (
+            slots.map((slot, index) => (
+              <TouchableOpacity
+                key={index}
+                className={` m-2 p-4 bg-[#f49b33] rounded-lg items-center justify-center ${
+                  selectedSlot && selectedSlot !== slot ? "opacity-50" : ""
+                }`}
+                onPress={() => handleSlotPress(slot)}
+                disabled={
+                  selectedSlot == slot || selectedSlot == null ? false : true
+                }
+              >
+                <Text className="text-white font-bold">{slot}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text className="text-white p-4">No slots available</Text>
+          )}
         </View>
       )}
       <Modal

@@ -125,13 +125,15 @@ export default function Restaurant() {
         <Image
           source={{ uri: item }}
           style={{
-            opacity: 0.5,
+            width: "100%",
+            height: "100%",
+            opacity: 0.8,
             backgroundColor: "black",
             marginRight: 20,
             marginLeft: 5,
             borderRadius: 25,
           }}
-          className="h-64"
+          resizeMode="cover"
         />
       </View>
     );
@@ -154,20 +156,32 @@ export default function Restaurant() {
         const restaurantData = doc.data();
         setRestaurantData(restaurantData);
 
+        console.log("=== DEBUG: Restaurant Query ===");
+        console.log("Restaurant Doc ID:", doc.id);
+        console.log("Full Path for carousel/slots query:", `/${doc.ref.path}`);
+
+        // res_id is stored as a Document Reference in Firebase, not a string
+        // So we need to query using the document reference directly
+        console.log("=== CAROUSEL QUERY DEBUG ===");
+        console.log("Querying carousel with doc.ref:", doc.ref);
+
         const carouselQuery = query(
-          collection(db, "carousel"),
+          collection(db, "carouel"),
           where("res_id", "==", doc.ref),
         );
         const carouselSnapshot = await getDocs(carouselQuery);
+        console.log("Carousel snapshot size:", carouselSnapshot.size);
+
         const carouselImages = [];
         if (carouselSnapshot.empty) {
           console.log("No matching carousel found");
-          return;
+        } else {
+          carouselSnapshot.forEach((carouselDoc) => {
+            console.log("Found carousel doc:", carouselDoc.id);
+            carouselImages.push(carouselDoc.data());
+          });
+          setCarouselData(carouselImages);
         }
-        carouselSnapshot.forEach((carouselDoc) => {
-          carouselImages.push(carouselDoc.data());
-        });
-        setCarouselData(carouselImages);
 
         const slotsQuery = query(
           collection(db, "slots"),
