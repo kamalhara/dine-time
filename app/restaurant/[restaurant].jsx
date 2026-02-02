@@ -1,8 +1,10 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -10,6 +12,7 @@ import {
   Platform,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,11 +23,13 @@ import { db } from "../config/firebase.config";
 
 export default function Restaurant() {
   const { restaurant } = useLocalSearchParams();
+  const router = useRouter();
   const flatListRef = useRef(null);
   const windowWidth = Dimensions.get("window").width;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [restaurantData, setRestaurantData] = useState({});
   const [carouselData, setCarouselData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [slotsData, setSlotsData] = useState([]);
 
@@ -46,6 +51,7 @@ export default function Restaurant() {
       flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
     }
   };
+
   const handlePrevImage = () => {
     const carouselLength = carouselData[0]?.images.length;
     if (currentIndex > 0) {
@@ -63,75 +69,85 @@ export default function Restaurant() {
 
   const carouselItem = ({ item }) => {
     return (
-      <View style={{ width: windowWidth - 2 }} className="h-64 relative">
+      <View style={{ width: windowWidth }} className="h-72 relative">
+        {/* Navigation Buttons */}
+        <TouchableOpacity
+          onPress={handleNextImage}
+          activeOpacity={0.8}
+          style={{
+            position: "absolute",
+            top: "45%",
+            right: 16,
+            zIndex: 10,
+          }}
+          className="bg-black/60 p-3 rounded-full"
+        >
+          <Ionicons name="chevron-forward" size={24} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handlePrevImage}
+          activeOpacity={0.8}
+          style={{
+            position: "absolute",
+            top: "45%",
+            left: 16,
+            zIndex: 10,
+          }}
+          className="bg-black/60 p-3 rounded-full"
+        >
+          <Ionicons name="chevron-back" size={24} color="white" />
+        </TouchableOpacity>
+
+        {/* Image Counter */}
         <View
           style={{
             position: "absolute",
-            top: "50%",
-            backgroundColor: "rgba(0,0,0,0.6)",
-            borderRadius: 50,
-            padding: 5,
+            top: 16,
+            right: 16,
             zIndex: 10,
-            right: "6%",
           }}
+          className="bg-black/60 px-3 py-1 rounded-full"
         >
-          <Ionicons
-            onPress={handleNextImage}
-            name="arrow-forward"
-            size={24}
-            color="white"
-          />
+          <Text className="text-white text-sm font-semibold">
+            {currentIndex + 1} / {carouselData[0]?.images?.length || 0}
+          </Text>
         </View>
+
+        {/* Pagination Dots */}
         <View
           style={{
             position: "absolute",
-            top: "50%",
-            backgroundColor: "rgba(0,0,0,0.6)",
-            borderRadius: 50,
-            padding: 5,
+            bottom: 20,
+            left: 0,
+            right: 0,
             zIndex: 10,
-            left: "2%",
           }}
+          className="flex-row justify-center items-center"
         >
-          <Ionicons
-            onPress={handlePrevImage}
-            name="arrow-back"
-            size={24}
-            color="white"
-          />
-        </View>
-        <View
-          style={{
-            position: "absolute",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "row",
-            left: "50%",
-            transform: [{ translateX: -50 }],
-            zIndex: 10,
-            bottom: 15,
-          }}
-        >
-          {carouselData[0].images?.map((_, i) => (
+          {carouselData[0]?.images?.map((_, i) => (
             <View
               key={i}
-              className={`bg-white h-2 w-2 ${
-                i == currentIndex && "h-3 w-3"
-              } p-1 mx-1 rounded-full`}
+              className={`mx-1 rounded-full ${
+                i === currentIndex
+                  ? "bg-[#f49b33] w-6 h-2"
+                  : "bg-white/50 w-2 h-2"
+              }`}
             />
           ))}
         </View>
+
+        {/* Gradient Overlay */}
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.7)"]}
+          className="absolute bottom-0 left-0 right-0 h-32 z-[5]"
+        />
+
         <Image
           source={{ uri: item }}
           style={{
             width: "100%",
             height: "100%",
-            opacity: 0.8,
-            backgroundColor: "black",
-            marginRight: 20,
-            marginLeft: 5,
-            borderRadius: 25,
           }}
           resizeMode="cover"
         />
@@ -141,6 +157,7 @@ export default function Restaurant() {
 
   const getRestaurantData = async () => {
     try {
+      setLoading(true);
       const restaurantQuery = query(
         collection(db, "restaurants"),
         where("name", "==", restaurant),
@@ -149,6 +166,7 @@ export default function Restaurant() {
 
       if (restaurantSnapshot.empty) {
         console.log("No matching restaurant found");
+        setLoading(false);
         return;
       }
 
@@ -156,28 +174,15 @@ export default function Restaurant() {
         const restaurantData = doc.data();
         setRestaurantData(restaurantData);
 
-        console.log("=== DEBUG: Restaurant Query ===");
-        console.log("Restaurant Doc ID:", doc.id);
-        console.log("Full Path for carousel/slots query:", `/${doc.ref.path}`);
-
-        // res_id is stored as a Document Reference in Firebase, not a string
-        // So we need to query using the document reference directly
-        console.log("=== CAROUSEL QUERY DEBUG ===");
-        console.log("Querying carousel with doc.ref:", doc.ref);
-
         const carouselQuery = query(
           collection(db, "carouel"),
           where("res_id", "==", doc.ref),
         );
         const carouselSnapshot = await getDocs(carouselQuery);
-        console.log("Carousel snapshot size:", carouselSnapshot.size);
 
         const carouselImages = [];
-        if (carouselSnapshot.empty) {
-          console.log("No matching carousel found");
-        } else {
+        if (!carouselSnapshot.empty) {
           carouselSnapshot.forEach((carouselDoc) => {
-            console.log("Found carousel doc:", carouselDoc.id);
             carouselImages.push(carouselDoc.data());
           });
           setCarouselData(carouselImages);
@@ -189,100 +194,208 @@ export default function Restaurant() {
         );
         const slotsSnapshot = await getDocs(slotsQuery);
         const slots = [];
-        if (slotsSnapshot.empty) {
-          console.log("No matching slots found");
-          return;
+        if (!slotsSnapshot.empty) {
+          slotsSnapshot.forEach((slotDoc) => {
+            slots.push(slotDoc.data());
+          });
+          setSlotsData(slots[0]?.slot);
         }
-        slotsSnapshot.forEach((slotDoc) => {
-          slots.push(slotDoc.data());
-        });
-        setSlotsData(slots[0]?.slot);
       }
+      setLoading(false);
     } catch (error) {
       console.log("Error fetching data", error);
+      setLoading(false);
     }
   };
+
   const handleLocation = async () => {
     const url = "https://maps.app.goo.gl/TtSmNr394bVp9J8n8";
     const supported = await Linking.canOpenURL(url);
     if (supported) {
       await Linking.openURL(url);
-    } else {
-      console.log("Don't know how to open URL", url);
     }
   };
+
   useEffect(() => {
     getRestaurantData();
   }, []);
 
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#2b2b2b] justify-center items-center">
+        <ActivityIndicator size="large" color="#f49b33" />
+        <Text className="text-gray-400 mt-4">Loading restaurant...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[
-        { backgroundColor: "#2b2b2b" },
+        { backgroundColor: "#2b2b2b", flex: 1 },
         Platform.OS == "android" && { paddingBottom: 55 },
-        Platform.OS == "ios" && { paddingBottom: 20 },
       ]}
     >
-      <ScrollView className="h-full">
-        <View className="flex-1 my-2 p-2">
-          <Text className="text-xl text-[#f49b33] mr-2 font-semibold">
-            {restaurant}
-          </Text>
-          <View className="border-b border-[#f49b33]" />
-        </View>
-        <View className="h-64 max-w-[98%] mx-2 rounded-[25px]">
-          <FlatList
-            ref={flatListRef}
-            data={carouselData[0]?.images}
-            renderItem={carouselItem}
-            horizontal
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            style={{ borderRadius: 25 }}
-          />
-        </View>
-        <View className="flex-1 flex-row mt-2 p-2">
-          <Ionicons name="location-sharp" size={24} color="#f49b33" />
-          <Text className="max-w-[75%] text-white">
-            {restaurantData?.address} |{"  "}
-            <Text
-              onPress={handleLocation}
-              className="underline flex items-center mt-1 text-[#f49b33] italic font-semibold"
-            >
-              Get Direction
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View className="flex-row items-center px-4 py-3">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="bg-[#3d3d3d] p-2 rounded-full mr-3"
+          >
+            <Ionicons name="arrow-back" size={24} color="#f49b33" />
+          </TouchableOpacity>
+          <View className="flex-1">
+            <Text className="text-2xl text-white font-bold" numberOfLines={1}>
+              {restaurant}
             </Text>
-          </Text>
-        </View>
-        <View className="flex-1 flex-row p-2">
-          <Ionicons name="time" size={20} color="#f49b33" />
-          <Text className="max-w-[75%] mx-2 font-semibold text-white">
-            {restaurantData?.opening} - {restaurantData?.closing}
-          </Text>
-        </View>
-        <View className="flex-1 border m-2 p-2 border-[#f49b33] rounded-lg">
-          <View className="flex-1 flex-row m-2 p-2 justify-end items-center">
-            <View className="flex-1 flex-row">
-              <Ionicons name="calendar" size={20} color="#f49b33" />
-              <Text className="text-white mx-2 text-base">
-                Select booking date
-              </Text>
+            <View className="flex-row items-center mt-1">
+              <Ionicons name="star" size={14} color="#f49b33" />
+              <Text className="text-[#f49b33] ml-1 font-semibold">4.5</Text>
+              <Text className="text-gray-400 ml-2">• Fine Dining</Text>
             </View>
-            <DatePickerComponent date={date} setDate={setDate} />
           </View>
-          <View className="flex-1 flex-row bg-[#474747] rounded-lg  m-2 p-2 justify-end items-center">
-            <View className="flex-1 flex-row">
-              <Ionicons name="people" size={20} color="#f49b33" />
-              <Text className="text-white mx-2 text-base">
-                Select number of guests
-              </Text>
-            </View>
-            <GuestPickerComponent
-              selectedNumber={selectedNumber}
-              setSelectedNumber={setSelectedNumber}
+          <TouchableOpacity className="bg-[#3d3d3d] p-2 rounded-full">
+            <Ionicons name="heart-outline" size={24} color="#f49b33" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Carousel */}
+        <View className="h-72">
+          {carouselData[0]?.images ? (
+            <FlatList
+              ref={flatListRef}
+              data={carouselData[0]?.images}
+              renderItem={carouselItem}
+              horizontal
+              pagingEnabled
+              scrollEnabled={false}
+              showsHorizontalScrollIndicator={false}
             />
+          ) : (
+            <View className="flex-1 bg-[#3d3d3d] justify-center items-center">
+              <Ionicons name="image-outline" size={60} color="#666" />
+              <Text className="text-gray-500 mt-2">No images available</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Info Cards */}
+        <View className="px-4 py-4">
+          {/* Location Card */}
+          <TouchableOpacity
+            onPress={handleLocation}
+            activeOpacity={0.8}
+            className="bg-[#3d3d3d] p-4 rounded-2xl mb-3 flex-row items-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+            <View className="bg-[#f49b33]/20 p-3 rounded-xl">
+              <Ionicons name="location" size={24} color="#f49b33" />
+            </View>
+            <View className="flex-1 ml-4">
+              <Text className="text-gray-400 text-sm">Location</Text>
+              <Text
+                className="text-white text-base font-medium mt-1"
+                numberOfLines={2}
+              >
+                {restaurantData?.address || "Address not available"}
+              </Text>
+            </View>
+            <View className="bg-[#f49b33] px-3 py-2 rounded-lg">
+              <Text className="text-white font-semibold text-sm">
+                Directions
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Hours Card */}
+          <View
+            className="bg-[#3d3d3d] p-4 rounded-2xl mb-3 flex-row items-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+            <View className="bg-[#f49b33]/20 p-3 rounded-xl">
+              <Ionicons name="time" size={24} color="#f49b33" />
+            </View>
+            <View className="flex-1 ml-4">
+              <Text className="text-gray-400 text-sm">Operating Hours</Text>
+              <Text className="text-white text-base font-medium mt-1">
+                {restaurantData?.opening} - {restaurantData?.closing}
+              </Text>
+            </View>
+            <View className="bg-green-900/50 px-3 py-2 rounded-lg">
+              <Text className="text-green-400 font-semibold text-sm">
+                Open Now
+              </Text>
+            </View>
           </View>
         </View>
-        <View className="flex-1">
+
+        {/* Booking Section */}
+        <View className="px-4">
+          <Text className="text-xl text-white font-bold mb-4">
+            Make a Reservation
+          </Text>
+
+          <View
+            className="bg-[#3d3d3d] rounded-2xl p-4"
+            style={{
+              shadowColor: "#f49b33",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 5,
+            }}
+          >
+            {/* Date Picker */}
+            <View className="flex-row items-center justify-between py-3 border-b border-[#4d4d4d]">
+              <View className="flex-row items-center flex-1">
+                <View className="bg-[#f49b33]/20 p-2 rounded-lg">
+                  <Ionicons name="calendar" size={20} color="#f49b33" />
+                </View>
+                <View className="ml-3">
+                  <Text className="text-gray-400 text-sm">Date</Text>
+                  <Text className="text-white font-medium">Select date</Text>
+                </View>
+              </View>
+              <DatePickerComponent date={date} setDate={setDate} />
+            </View>
+
+            {/* Guest Picker */}
+            <View className="flex-row items-center justify-between py-3">
+              <View className="flex-row items-center flex-1">
+                <View className="bg-[#f49b33]/20 p-2 rounded-lg">
+                  <Ionicons name="people" size={20} color="#f49b33" />
+                </View>
+                <View className="ml-3">
+                  <Text className="text-gray-400 text-sm">Guests</Text>
+                  <Text className="text-white font-medium">
+                    {selectedNumber}{" "}
+                    {selectedNumber === 1 ? "Person" : "People"}
+                  </Text>
+                </View>
+              </View>
+              <GuestPickerComponent
+                selectedNumber={selectedNumber}
+                setSelectedNumber={setSelectedNumber}
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Slots Section */}
+        <View className="px-4 mt-4 pb-8">
           <FindSlots
             restaurant={restaurant}
             date={date}

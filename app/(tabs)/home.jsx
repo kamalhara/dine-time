@@ -1,5 +1,7 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -22,6 +24,7 @@ import { db } from "../config/firebase.config";
 export default function Home() {
   const router = useRouter();
   const [restaurants, setRestaurants] = useState([]);
+
   const temp = async () => {
     const value = await AsyncStorage.getItem("isGuest");
     const email = await AsyncStorage.getItem("userEmail");
@@ -31,18 +34,59 @@ export default function Home() {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => router.push(`/restaurant/${item.name}`)}
-      className="bg-[#5f5f5f] max-h-64 max-w-xs flex justify-center rounded-lg p-4 mx-4 shadow-md"
+      activeOpacity={0.9}
+      style={{
+        shadowColor: "#f49b33",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
+      }}
+      className="bg-[#3d3d3d] w-72 rounded-2xl overflow-hidden mx-3"
     >
-      <Image
-        resizeMode="cover"
-        source={{ uri: item.image }}
-        className="h-28 mt-2 mb-1 rounded-lg"
-      />
-      <Text className="text-white text-lg font-bold mb-2">{item.name}</Text>
-      <Text className="text-white text-base mb-2">{item.address}</Text>
-      <Text className="text-white text-base mb-2">
-        Open: {item.opening} - Close: {item.closing}
-      </Text>
+      <View className="relative">
+        <Image
+          resizeMode="cover"
+          source={{ uri: item.image }}
+          className="h-36 w-full"
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.8)"]}
+          className="absolute bottom-0 left-0 right-0 h-20"
+        />
+        <View className="absolute bottom-2 left-3 flex-row items-center">
+          <View className="bg-[#f49b33] px-2 py-1 rounded-lg flex-row items-center">
+            <Ionicons name="star" size={12} color="#fff" />
+            <Text className="text-white text-xs font-bold ml-1">4.5</Text>
+          </View>
+          <View className="bg-[#5f5f5f] px-2 py-1 rounded-lg ml-2 flex-row items-center">
+            <Ionicons name="restaurant" size={12} color="#f49b33" />
+            <Text className="text-white text-xs ml-1">Fine Dining</Text>
+          </View>
+        </View>
+      </View>
+      <View className="p-4">
+        <Text className="text-white text-lg font-bold" numberOfLines={1}>
+          {item.name}
+        </Text>
+        <View className="flex-row items-center mt-2">
+          <Ionicons name="location" size={14} color="#f49b33" />
+          <Text className="text-gray-400 text-sm ml-1 flex-1" numberOfLines={1}>
+            {item.address}
+          </Text>
+        </View>
+        <View className="flex-row items-center mt-2 justify-between">
+          <View className="flex-row items-center">
+            <Ionicons name="time" size={14} color="#f49b33" />
+            <Text className="text-gray-400 text-sm ml-1">
+              {item.opening} - {item.closing}
+            </Text>
+          </View>
+          <View className="bg-green-900/50 px-2 py-1 rounded">
+            <Text className="text-green-400 text-xs font-semibold">Open</Text>
+          </View>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -54,6 +98,7 @@ export default function Home() {
       setRestaurants((prev) => [...prev, item.data()]);
     });
   };
+
   useEffect(() => {
     getRestaurants();
     temp();
@@ -68,70 +113,114 @@ export default function Home() {
       ]}
     >
       <View className="flex items-center">
-        <View className="bg-[#5f5f5f] w-11/12 rounded-lg shadow-lg justify-between items-center flex flex-row p-2">
-          <View className="flex flex-row">
-            <Text
-              className={`text-base h-10
-                ${Platform.OS == "ios" ? "pt-[8px]" : "pt-1"}
-               align-middle text-white`}
-            >
-              {" "}
-              Welcome to{" "}
-            </Text>
-            <Image resizeMode="cover" className={"w-20 h-12"} source={logo} />
+        <View
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+          }}
+          className="bg-[#3d3d3d] w-11/12 rounded-2xl justify-between items-center flex flex-row p-3"
+        >
+          <View className="flex flex-row items-center">
+            <Text className="text-base text-white mr-1">Welcome to</Text>
+            <Image resizeMode="contain" className="w-24 h-10" source={logo} />
           </View>
+          <TouchableOpacity className="bg-[#f49b33] p-2 rounded-full">
+            <Ionicons name="search" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
       </View>
-      <ScrollView stickyHeaderIndices={[0]}>
+
+      <ScrollView
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+      >
         <ImageBackground
           resizeMode="cover"
-          className="mb-4 w-full bg-[#2b2b2b] h-52 items-center justify-center"
+          className="mb-4 w-full bg-[#2b2b2b] h-56 items-center justify-center"
           source={banner}
         >
           <BlurView
-            intensity={Platform.OS === "android" ? 100 : 25}
+            intensity={Platform.OS === "android" ? 100 : 30}
             tint="dark"
-            className="w-full p-4 shadow-lg"
+            className="w-full p-6 shadow-lg"
           >
-            <Text className="text-center text-3xl font-bold text-white">
+            <Text className="text-center text-3xl font-bold text-white mb-2">
               Dine with your loved ones
+            </Text>
+            <Text className="text-center text-[#f49b33] text-base">
+              Book the perfect table at top restaurants
             </Text>
           </BlurView>
         </ImageBackground>
-        <View className="p-4 bg-[#2b2b2b] flex-row items-center">
-          <Text className="text-3xl text-white mr-2 font-semibold">
-            Special Discount %
-          </Text>
+
+        <View className="px-4 py-3 bg-[#2b2b2b] flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <View className="bg-[#f49b33] p-2 rounded-lg mr-3">
+              <Ionicons name="pricetag" size={20} color="#fff" />
+            </View>
+            <Text className="text-2xl text-white font-bold">
+              Special Offers
+            </Text>
+          </View>
+          <TouchableOpacity>
+            <Text className="text-[#f49b33] text-sm">See all</Text>
+          </TouchableOpacity>
         </View>
+
         {restaurants.length > 0 ? (
           <FlatList
             data={restaurants}
             renderItem={renderItem}
             horizontal
-            contentContainerStyle={{ padding: 16 }}
+            contentContainerStyle={{
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+            }}
             showsHorizontalScrollIndicator={false}
             scrollEnabled={true}
           />
         ) : (
-          <ActivityIndicator animating color={"#fb9b33"} />
+          <View className="h-48 justify-center items-center">
+            <ActivityIndicator animating color={"#f49b33"} size="large" />
+          </View>
         )}
-        <View className="p-4 bg-[#2b2b2b] flex-row items-center">
-          <Text className="text-3xl text-[#fb9b33] mr-2 font-semibold">
-            Our Restaurants
-          </Text>
+
+        <View className="px-4 py-3 bg-[#2b2b2b] flex-row items-center justify-between mt-4">
+          <View className="flex-row items-center">
+            <View className="bg-[#f49b33] p-2 rounded-lg mr-3">
+              <Ionicons name="restaurant" size={20} color="#fff" />
+            </View>
+            <Text className="text-2xl text-white font-bold">
+              Our Restaurants
+            </Text>
+          </View>
+          <TouchableOpacity>
+            <Text className="text-[#f49b33] text-sm">See all</Text>
+          </TouchableOpacity>
         </View>
+
         {restaurants.length > 0 ? (
           <FlatList
             data={restaurants}
             renderItem={renderItem}
             horizontal
-            contentContainerStyle={{ padding: 16 }}
+            contentContainerStyle={{
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+            }}
             showsHorizontalScrollIndicator={false}
             scrollEnabled={true}
           />
         ) : (
-          <ActivityIndicator animating color={"#fb9b33"} />
+          <View className="h-48 justify-center items-center">
+            <ActivityIndicator animating color={"#f49b33"} size="large" />
+          </View>
         )}
+
+        <View className="h-20" />
       </ScrollView>
     </SafeAreaView>
   );
