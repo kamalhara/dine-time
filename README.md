@@ -4,7 +4,7 @@ A modern, cross-platform mobile application for restaurant reservations and dini
 
 ## 🎥 App Demo (Click ▶ to Play)
 
-<video src="assets/demo.mp4" controls width="360"></video>
+<video src="assets/dinetime.mov" controls width="360"></video>
 
 ## 📱 Features
 
