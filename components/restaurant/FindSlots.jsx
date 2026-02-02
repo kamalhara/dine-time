@@ -1,7 +1,6 @@
 import { db } from "@/app/config/firebase.config";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { addDoc, collection } from "firebase/firestore";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -111,6 +110,9 @@ const FindSlots = ({
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.8}
+        className={`p-4 rounded-xl flex-row items-center justify-center ${
+          slotsVisible ? "bg-[#4b5563]" : "bg-[#f49b33]"
+        }`}
         style={{
           shadowColor: "#f49b33",
           shadowOffset: { width: 0, height: 4 },
@@ -119,21 +121,14 @@ const FindSlots = ({
           elevation: 6,
         }}
       >
-        <LinearGradient
-          colors={
-            slotsVisible ? ["#4b5563", "#374151"] : ["#f49b33", "#d97706"]
-          }
-          className="p-4 rounded-xl flex-row items-center justify-center"
-        >
-          <Ionicons
-            name={slotsVisible ? "chevron-up" : "search"}
-            size={20}
-            color="#fff"
-          />
-          <Text className="text-white text-lg font-bold ml-2">
-            {slotsVisible ? "Hide Slots" : "Find Available Slots"}
-          </Text>
-        </LinearGradient>
+        <Ionicons
+          name={slotsVisible ? "chevron-up" : "search"}
+          size={20}
+          color="#fff"
+        />
+        <Text className="text-white text-lg font-bold ml-2">
+          {slotsVisible ? "Hide Slots" : "Find Available Slots"}
+        </Text>
       </TouchableOpacity>
 
       {/* Slots Grid */}
@@ -216,7 +211,7 @@ const FindSlots = ({
           onPress={handleBooking}
           activeOpacity={0.8}
           disabled={isBooking}
-          className="mt-4"
+          className="mt-4 bg-green-600 p-4 rounded-xl flex-row items-center justify-center"
           style={{
             shadowColor: "#22c55e",
             shadowOffset: { width: 0, height: 4 },
@@ -225,19 +220,14 @@ const FindSlots = ({
             elevation: 6,
           }}
         >
-          <LinearGradient
-            colors={["#22c55e", "#16a34a"]}
-            className="p-4 rounded-xl flex-row items-center justify-center"
-          >
-            <Ionicons
-              name={isBooking ? "hourglass" : "checkmark-circle"}
-              size={22}
-              color="#fff"
-            />
-            <Text className="text-white text-lg font-bold ml-2">
-              {isBooking ? "Booking..." : `Book ${selectedSlot}`}
-            </Text>
-          </LinearGradient>
+          <Ionicons
+            name={isBooking ? "hourglass" : "checkmark-circle"}
+            size={22}
+            color="#fff"
+          />
+          <Text className="text-white text-lg font-bold ml-2">
+            {isBooking ? "Booking..." : `Book ${selectedSlot}`}
+          </Text>
         </TouchableOpacity>
       )}
 
@@ -337,7 +327,7 @@ const FindSlots = ({
                     <TouchableOpacity
                       onPress={handleSubmit}
                       activeOpacity={0.8}
-                      className="mt-6"
+                      className="mt-6 bg-[#f49b33] p-4 rounded-xl flex-row items-center justify-center"
                       style={{
                         shadowColor: "#f49b33",
                         shadowOffset: { width: 0, height: 4 },
@@ -346,14 +336,9 @@ const FindSlots = ({
                         elevation: 6,
                       }}
                     >
-                      <LinearGradient
-                        colors={["#f49b33", "#d97706"]}
-                        className="p-4 rounded-xl flex-row items-center justify-center"
-                      >
-                        <Text className="text-white text-lg font-bold">
-                          Confirm Booking
-                        </Text>
-                      </LinearGradient>
+                      <Text className="text-white text-lg font-bold">
+                        Confirm Booking
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 )}

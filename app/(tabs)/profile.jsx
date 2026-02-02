@@ -1,6 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { getAuth, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
@@ -82,9 +81,8 @@ export default function Profile() {
 
         {/* Avatar Section */}
         <View className="items-center mb-8">
-          <LinearGradient
-            colors={["#f49b33", "#d97706"]}
-            className="w-28 h-28 rounded-full items-center justify-center"
+          <View
+            className="w-28 h-28 rounded-full bg-[#f49b33] items-center justify-center"
             style={{
               shadowColor: "#f49b33",
               shadowOffset: { width: 0, height: 4 },
@@ -102,7 +100,7 @@ export default function Profile() {
                 <Ionicons name="person" size={40} color="#f49b33" />
               )}
             </View>
-          </LinearGradient>
+          </View>
 
           {userEmail ? (
             <View className="mt-4 items-center">
@@ -194,6 +192,7 @@ export default function Profile() {
             <TouchableOpacity
               onPress={handleSignup}
               activeOpacity={0.8}
+              className="bg-[#f49b33] p-4 rounded-xl flex-row items-center justify-center"
               style={{
                 shadowColor: "#f49b33",
                 shadowOffset: { width: 0, height: 4 },
@@ -202,15 +201,10 @@ export default function Profile() {
                 elevation: 8,
               }}
             >
-              <LinearGradient
-                colors={["#f49b33", "#d97706"]}
-                className="p-4 rounded-xl flex-row items-center justify-center"
-              >
-                <Ionicons name="person-add" size={20} color="#fff" />
-                <Text className="text-white text-base font-semibold ml-2">
-                  Create Account
-                </Text>
-              </LinearGradient>
+              <Ionicons name="person-add" size={20} color="#fff" />
+              <Text className="text-white text-base font-semibold ml-2">
+                Create Account
+              </Text>
             </TouchableOpacity>
           )}
         </View>

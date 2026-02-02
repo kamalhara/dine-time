@@ -1,7 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -50,10 +49,8 @@ export default function Home() {
           source={{ uri: item.image }}
           className="h-36 w-full"
         />
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.8)"]}
-          className="absolute bottom-0 left-0 right-0 h-20"
-        />
+        {/* Subtle dark overlay at bottom for text readability */}
+        <View className="absolute bottom-0 left-0 right-0 h-12 bg-black/40" />
         <View className="absolute bottom-2 left-3 flex-row items-center">
           <View className="bg-[#f49b33] px-2 py-1 rounded-lg flex-row items-center">
             <Ionicons name="star" size={12} color="#fff" />

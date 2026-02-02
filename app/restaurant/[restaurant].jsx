@@ -1,5 +1,4 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
@@ -137,11 +136,8 @@ export default function Restaurant() {
           ))}
         </View>
 
-        {/* Gradient Overlay */}
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.7)"]}
-          className="absolute bottom-0 left-0 right-0 h-32 z-[5]"
-        />
+        {/* Dark Overlay instead of gradient */}
+        <View className="absolute bottom-0 left-0 right-0 h-32 bg-black/50 z-[5]" />
 
         <Image
           source={{ uri: item }}

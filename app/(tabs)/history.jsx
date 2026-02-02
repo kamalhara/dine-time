@@ -1,6 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
   collection,
@@ -88,12 +87,11 @@ const History = () => {
           elevation: 6,
         }}
       >
-        {/* Status Header */}
-        <LinearGradient
-          colors={upcoming ? ["#f49b33", "#d97706"] : ["#4b5563", "#374151"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          className="px-4 py-3 flex-row items-center justify-between"
+        {/* Status Header - solid color instead of gradient */}
+        <View
+          className={`px-4 py-3 flex-row items-center justify-between ${
+            upcoming ? "bg-[#f49b33]" : "bg-[#4b5563]"
+          }`}
         >
           <View className="flex-row items-center">
             <Ionicons
@@ -106,7 +104,7 @@ const History = () => {
             </Text>
           </View>
           <Text className="text-white/80 text-sm">{formatDate(item.date)}</Text>
-        </LinearGradient>
+        </View>
 
         {/* Content */}
         <View className="p-4">
@@ -213,6 +211,7 @@ const History = () => {
       <TouchableOpacity
         onPress={() => router.push("/home")}
         activeOpacity={0.8}
+        className="bg-[#f49b33] px-8 py-4 rounded-xl flex-row items-center"
         style={{
           shadowColor: "#f49b33",
           shadowOffset: { width: 0, height: 4 },
@@ -221,13 +220,8 @@ const History = () => {
           elevation: 8,
         }}
       >
-        <LinearGradient
-          colors={["#f49b33", "#d97706"]}
-          className="px-8 py-4 rounded-xl flex-row items-center"
-        >
-          <Ionicons name="restaurant" size={20} color="#fff" />
-          <Text className="text-white font-bold ml-2">Browse Restaurants</Text>
-        </LinearGradient>
+        <Ionicons name="restaurant" size={20} color="#fff" />
+        <Text className="text-white font-bold ml-2">Browse Restaurants</Text>
       </TouchableOpacity>
     </View>
   );
@@ -288,6 +282,7 @@ const History = () => {
           <TouchableOpacity
             onPress={() => router.push("/signin")}
             activeOpacity={0.8}
+            className="bg-[#f49b33] px-8 py-4 rounded-xl flex-row items-center"
             style={{
               shadowColor: "#f49b33",
               shadowOffset: { width: 0, height: 4 },
@@ -296,13 +291,8 @@ const History = () => {
               elevation: 8,
             }}
           >
-            <LinearGradient
-              colors={["#f49b33", "#d97706"]}
-              className="px-8 py-4 rounded-xl flex-row items-center"
-            >
-              <Ionicons name="log-in" size={20} color="#fff" />
-              <Text className="text-white font-bold ml-2">Sign In</Text>
-            </LinearGradient>
+            <Ionicons name="log-in" size={20} color="#fff" />
+            <Text className="text-white font-bold ml-2">Sign In</Text>
           </TouchableOpacity>
         </View>
       )}
