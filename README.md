@@ -2,6 +2,10 @@
 
 A modern, cross-platform mobile application for restaurant reservations and dining experiences. Built with React Native, Expo, and Firebase.
 
+## 🎥 App Demo (Click ▶ to Play)
+
+<video src="assets/demo.mp4" controls width="360"></video>
+
 ## 📱 Features
 
 - **🔐 User Authentication**: Sign up, sign in, and guest access
